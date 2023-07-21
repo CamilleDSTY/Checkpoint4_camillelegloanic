@@ -1,36 +1,72 @@
-import Counter from "../components/Counter";
-import logo from "../assets/logo.svg";
+import { Flex, Text, Container, Box, Image } from "@chakra-ui/react";
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-export default function Home() {
+export default function Home({ id }) {
+  const [books, setBooks] = useState([]);
+
+  const getAllBooks = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/books`)
+      .then((resp) => resp.json())
+      .then((data) => setBooks(data))
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    getAllBooks();
+  }, []);
+
   return (
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>Hello Vite + React !</p>
+    <Box>
+      <Container maxW="container.xl">
+        <Flex mt="3rem">
+          <Text fontSize="2xl">
+            Passionnée de littérature depuis mon plus jeune âge, je souhaite
+            partager cet amour du livre, et mes découvertes avec d’autres. Ici
+            on parlera fantasy, young adult, littérature jeunesse, policier et
+            cosy mystery.
+          </Text>
+        </Flex>
+        <Image
+          src="src/assets/logo-book.png"
+          alt="logo of a book"
+          width="4rem"
+          height="4rem"
+          m="auto"
+          mt="3rem"
+        />
 
-      <Counter />
-
-      <p>
-        Edit <code>App.jsx</code> and save to test HMR updates.
-      </p>
-      <p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        {" | "}
-        <a
-          className="App-link"
-          href="https://vitejs.dev/guide/features.html"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Vite Docs
-        </a>
-      </p>
-    </header>
+        <Box mt="5rem">
+          <Flex flexWrap="wrap" gap="3rem" justifyContent="space-evenly">
+            {books.map((book) => (
+              <Link to={`/livre/${book.id}`} id={id}>
+                <Image
+                  width="20rem"
+                  height="32rem"
+                  _hover={{
+                    filter: "auto",
+                    color: "white",
+                    brightness: "115%",
+                  }}
+                  src={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/public/assets/images/bookPicture/${book.picture}`}
+                  alt={book.name}
+                  key={`book-${book.id}`}
+                />
+              </Link>
+            ))}
+          </Flex>
+        </Box>
+      </Container>
+      <Box mt="10rem">
+        <Text color="black">Camille le Gloanic - 2023</Text>
+      </Box>
+    </Box>
   );
 }
+
+Home.propTypes = {
+  id: PropTypes.number.isRequired,
+};
